@@ -27,8 +27,5 @@
   "js/ts.tsdk.path": "node_modules/typescript/lib",
 
   // Disable cspell spell checking
-  "cSpell.enabled": false,
-
-  // Disable markdown lint
-  "markdownlint.enable": false
+  "cSpell.enabled": false
 }
