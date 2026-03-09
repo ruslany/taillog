@@ -8,7 +8,7 @@ Each stage is self-contained and ends with a working, testable state. Complete a
 
 Goal: a running Next.js app with all dependencies installed and environment wired up, but no features yet.
 
-- Init Next.js 14 app with App Router and TypeScript: `npx create-next-app@latest myfleet --typescript --tailwind --app`
+- Init Next.js 16 app with App Router and TypeScript and *using src folder*: `npx create-next-app@latest talllog --typescript --tailwind --app`
 - Install and init shadcn/ui: `npx shadcn@latest init`
 - Install next-themes: `npm install next-themes`
 - Install NextAuth v5: `npm install next-auth@beta`
