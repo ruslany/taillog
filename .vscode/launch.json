@@ -7,10 +7,7 @@
       "request": "launch",
       "command": "npm run dev",
       "sourceMaps": true,
-      "resolveSourceMapLocations": [
-        "${workspaceFolder}/**",
-        "!**/node_modules/**"
-      ]
+      "resolveSourceMapLocations": ["${workspaceFolder}/**", "!**/node_modules/**"]
     },
     {
       "name": "Next.js: debug client-side",

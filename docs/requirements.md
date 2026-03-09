@@ -6,15 +6,15 @@ A personal web app to track the real-world aircraft you've flown on, showing the
 
 ## Tech Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Auth | NextAuth.js v5 with Google OAuth provider |
-| Database | Local PostgreSQL (dev) + Neon serverless Postgres (prod) |
-| ORM | Prisma 7|
-| Map | Leaflet.js via react-leaflet |
-| Styling | Tailwind CSS + shadcn/ui + next-themes |
-| Deployment | Vercel |
+| Layer      | Choice                                                   |
+| ---------- | -------------------------------------------------------- |
+| Framework  | Next.js 16 (App Router)                                  |
+| Auth       | NextAuth.js v5 with Google OAuth provider                |
+| Database   | Local PostgreSQL (dev) + Neon serverless Postgres (prod) |
+| ORM        | Prisma 7                                                 |
+| Map        | Leaflet.js via react-leaflet                             |
+| Styling    | Tailwind CSS + shadcn/ui + next-themes                   |
+| Deployment | Vercel                                                   |
 
 ---
 
@@ -36,8 +36,6 @@ Use **shadcn/ui** throughout the app. Initialize it with `npx shadcn@latest init
 Install components individually as needed with `npx shadcn@latest add <component>`. Do not install the full component set at once.
 
 ---
-
-
 
 - NextAuth.js v5 configured with the Google OAuth provider
 - Prisma adapter for NextAuth so users and sessions are persisted in Neon Postgres
@@ -72,6 +70,7 @@ model Aircraft {
 Use two separate env files — `.env.local` for local development and Vercel's environment variables dashboard for production. Never commit either file to git.
 
 **`.env.local` (local development):**
+
 ```
 # NextAuth
 AUTH_SECRET=
@@ -88,6 +87,7 @@ OPENSKY_CLIENT_SECRET=
 ```
 
 **Production (Vercel environment variables dashboard):**
+
 ```
 # NextAuth
 AUTH_SECRET=
@@ -113,11 +113,13 @@ OpenSky credentials are **only used server-side** (in API routes). They must nev
 ## Pages & Routes
 
 ### `/` — Landing / Sign-in Page
+
 - Simple centered page with app name, a one-line description, and a "Sign in with Google" button
 - If the user is already signed in, redirect to `/dashboard`
 - Fully responsive — looks good on both mobile and desktop
 
 ### `/dashboard` — Main App Page (protected)
+
 - Protected: redirect to `/` if not authenticated
 - **Desktop layout** (md breakpoint and above): side-by-side split — left panel (~35%) for the aircraft list and form, right panel (~65%) for the map. Both panels are always visible.
 - **Mobile layout** (below md breakpoint): full-screen tabbed interface with two tabs — "My Fleet" (list + form) and "Map". The active tab takes the full viewport height. Tab bar is fixed at the top below the nav.
@@ -128,14 +130,16 @@ OpenSky credentials are **only used server-side** (in API routes). They must nev
 ## Aircraft List Panel
 
 ### Add Aircraft Form
+
 - Two inputs:
   - **Tail Number** (required): text input, e.g. `N12345`. Uppercase automatically.
   - **Nickname** (optional): free text, e.g. "United flight to Tokyo"
 - On submit, the app calls the lookup API (see below) to resolve the tail number to an ICAO24 hex code, then saves the aircraft to the database
-- If the tail number cannot be resolved to an ICAO24 code, show an inline error: *"Tail number not found in aircraft database. Please check and try again."*
-- If the tail number is a duplicate for this user, show: *"You've already added this aircraft."*
+- If the tail number cannot be resolved to an ICAO24 code, show an inline error: _"Tail number not found in aircraft database. Please check and try again."_
+- If the tail number is a duplicate for this user, show: _"You've already added this aircraft."_
 
 ### Aircraft List
+
 - Shows all aircraft the user has added, sorted by `addedAt` descending (most recent first)
 - Each item displays:
   - Tail number (bold)
@@ -169,6 +173,7 @@ OpenSky credentials are **only used server-side** (in API routes). They must nev
 Use the **airport-data.com** thumbnail API to fetch photos of each aircraft. It is free, requires no API key, and accepts the ICAO24 hex code directly — which is already stored in the DB.
 
 Request format:
+
 ```
 https://airport-data.com/api/ac_thumb.json?m={icao24}
 ```
@@ -186,6 +191,7 @@ https://airport-data.com/api/ac_thumb.json?m={icao24}
 Use a single `aircraft-photo.tsx` component for both placements. It should accept a `size` prop (`"thumb"` | `"full"`) to render the appropriate dimensions, keeping photo-fetching and fallback logic in one place.
 
 In both placements:
+
 - Always display the photographer's name as a small muted caption below the photo (it is included in the API response and crediting is good etiquette)
 - If the API returns no photo (`count: 0`) or the request fails, fall back to a generic plane SVG icon — do not show a broken image element
 
@@ -196,9 +202,11 @@ In both placements:
 All API routes require an authenticated session. Return `401` if no session is present.
 
 ### `GET /api/aircraft/[icao24]/photo`
+
 Proxies a photo lookup to airport-data.com for the given ICAO24 code. Returns the first available thumbnail URL and photographer credit, or `null` if none found. Uses Next.js fetch caching with a 24-hour revalidation window so airport-data.com is not hit on every render.
 
 Response shape:
+
 ```json
 {
   "imageUrl": "https://airport-data.com/images/aircraft/thumbnails/000/582/582407.jpg",
@@ -209,9 +217,11 @@ Response shape:
 Returns `{ "imageUrl": null, "photographer": null }` if no photo is available.
 
 ### `GET /api/aircraft`
+
 Returns all aircraft saved by the current user, each with its current live data from OpenSky appended.
 
 Response shape per aircraft:
+
 ```json
 {
   "id": "cuid",
@@ -235,9 +245,11 @@ Response shape per aircraft:
 If the aircraft is not currently tracked by OpenSky, `live` is `null`.
 
 ### `POST /api/aircraft`
+
 Adds an aircraft to the current user's list.
 
 Request body:
+
 ```json
 { "tailNumber": "N12345", "icao24": "a1b2c3", "nickname": "optional" }
 ```
@@ -245,9 +257,11 @@ Request body:
 Returns the created `Aircraft` record or a `409` if it's a duplicate.
 
 ### `DELETE /api/aircraft/[id]`
+
 Deletes the aircraft with the given ID, only if it belongs to the current user. Returns `403` if it belongs to another user.
 
 ### `GET /api/aircraft/lookup?tail=N12345`
+
 Resolves a tail number to an ICAO24 hex code using the OpenSky aircraft metadata API:
 `https://opensky-network.org/api/metadata/aircraft/registration/{tail}`
 
@@ -256,7 +270,9 @@ Resolves a tail number to an ICAO24 hex code using the OpenSky aircraft metadata
 - This endpoint authenticates to OpenSky using `OPENSKY_CLIENT_ID` and `OPENSKY_CLIENT_SECRET` via OAuth2 client credentials flow
 
 ### OpenSky Live Position Fetching (internal utility, not a route)
+
 Create a server-side utility function `fetchLivePositions(icao24List: string[])` that:
+
 - Calls `https://opensky-network.org/api/states/all` with `icao24` filter params
 - Authenticates using the OAuth2 bearer token obtained from OpenSky's token endpoint
 - Returns a map of `icao24 → live state`
@@ -277,7 +293,7 @@ Create a server-side utility function `fetchLivePositions(icao24List: string[])`
 
 ## Error Handling & Edge Cases
 
-- If OpenSky is unreachable or returns an error, the aircraft list still loads but all `live` fields are `null`. Show a subtle banner: *"Live tracking unavailable — OpenSky may be down."*
+- If OpenSky is unreachable or returns an error, the aircraft list still loads but all `live` fields are `null`. Show a subtle banner: _"Live tracking unavailable — OpenSky may be down."_
 - If a tail number resolves to an ICAO24 but OpenSky has no current data for it, show the aircraft in the list with a gray "Not Tracked" badge
 - Prisma/DB errors should be caught and return a `500` with a generic message; do not leak stack traces
 - All forms should have loading states and disable submit buttons while requests are in-flight
@@ -332,22 +348,26 @@ Create a server-side utility function `fetchLivePositions(icao24List: string[])`
 Use **`next-themes`** for theme management. It integrates seamlessly with Tailwind's `darkMode: "class"` strategy and shadcn/ui, which is already built around this pattern.
 
 **Setup:**
+
 - Add `darkMode: "class"` to `tailwind.config.ts`
 - Wrap the app in a `ThemeProvider` from `next-themes` in the root layout, with `attribute="class"`, `defaultTheme="system"`, and `enableSystem={true}`
 - shadcn/ui components will automatically respond to the theme class — no extra work needed for them
 
 **Theme toggle:**
+
 - Add a theme toggle button to the navbar
 - Use a shadcn `Button` with a sun/moon/monitor icon from `lucide-react`
 - Cycle through `light → dark → system` on each click, or use a small dropdown with all three options
 - Persist the user's choice across sessions (next-themes handles this via localStorage automatically)
 
 **Leaflet map theming:**
+
 - In light mode use the standard OpenStreetMap tile layer
 - In dark mode use the CartoDB Dark Matter tile layer: `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`
 - Switch tile layers reactively when the theme changes using the `useTheme` hook from next-themes
 
 **General guidance:**
+
 - Use Tailwind `dark:` variants for any custom styles not covered by shadcn components
 - Ensure text contrast meets readability standards in both modes
 - The status badges (Airborne / On Ground), aircraft cards, and map popups should all look polished in both themes
