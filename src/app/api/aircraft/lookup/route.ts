@@ -14,10 +14,9 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'tail parameter is required' }, { status: 400 });
   }
 
-  const res = await fetch(
-    `https://hexdb.io/reg-hex?reg=${encodeURIComponent(tail)}`,
-    { next: { revalidate: 86400 } }
-  );
+  const res = await fetch(`https://hexdb.io/reg-hex?reg=${encodeURIComponent(tail)}`, {
+    next: { revalidate: 86400 },
+  });
 
   if (!res.ok) {
     return NextResponse.json({ error: 'Lookup service unavailable' }, { status: 502 });

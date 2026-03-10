@@ -36,8 +36,8 @@ export interface LiveState {
   airborne: boolean;
   latitude: number | null;
   longitude: number | null;
-  altitude: number | null;   // meters → converted to feet by caller
-  velocity: number | null;   // m/s → converted to knots by caller
+  altitude: number | null; // meters → converted to feet by caller
+  velocity: number | null; // m/s → converted to knots by caller
   heading: number | null;
   originCountry: string;
   lastContact: number;
@@ -48,9 +48,7 @@ export interface LiveState {
  * Returns a map of icao24 (lowercase) → LiveState.
  * Returns an empty map if OpenSky is unreachable.
  */
-export async function fetchLivePositions(
-  icao24List: string[]
-): Promise<Map<string, LiveState>> {
+export async function fetchLivePositions(icao24List: string[]): Promise<Map<string, LiveState>> {
   const result = new Map<string, LiveState>();
   if (icao24List.length === 0) return result;
 
@@ -61,10 +59,9 @@ export async function fetchLivePositions(
     params.append('icao24', code.toLowerCase());
   }
 
-  const res = await fetch(
-    `https://opensky-network.org/api/states/all?${params.toString()}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
+  const res = await fetch(`https://opensky-network.org/api/states/all?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 
   if (!res.ok) {
     throw new Error(`OpenSky states/all failed: ${res.status}`);

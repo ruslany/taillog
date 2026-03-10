@@ -51,10 +51,7 @@ export async function POST(req: Request) {
   };
 
   if (!tailNumber || !icao24) {
-    return NextResponse.json(
-      { error: 'tailNumber and icao24 are required' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'tailNumber and icao24 are required' }, { status: 400 });
   }
 
   try {
@@ -74,10 +71,7 @@ export async function POST(req: Request) {
       'code' in err &&
       (err as { code: string }).code === 'P2002'
     ) {
-      return NextResponse.json(
-        { error: "You've already added this aircraft." },
-        { status: 409 }
-      );
+      return NextResponse.json({ error: "You've already added this aircraft." }, { status: 409 });
     }
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
