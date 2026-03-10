@@ -20,7 +20,8 @@ export async function GET() {
   if (aircraft.length > 0) {
     try {
       liveMap = await fetchLivePositions(aircraft.map((a) => a.icao24));
-    } catch {
+    } catch (err) {
+      console.error('[OpenSky] fetchLivePositions failed:', err);
       openskyError = true;
     }
   }

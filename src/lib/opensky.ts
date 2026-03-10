@@ -22,7 +22,8 @@ async function getAccessToken(): Promise<string> {
   });
 
   if (!res.ok) {
-    throw new Error(`OpenSky token request failed: ${res.status}`);
+    const body = await res.text().catch(() => '');
+    throw new Error(`OpenSky token request failed: ${res.status} ${body}`);
   }
 
   const data = await res.json();
@@ -64,7 +65,8 @@ export async function fetchLivePositions(icao24List: string[]): Promise<Map<stri
   });
 
   if (!res.ok) {
-    throw new Error(`OpenSky states/all failed: ${res.status}`);
+    const body = await res.text().catch(() => '');
+    throw new Error(`OpenSky states/all failed: ${res.status} ${body}`);
   }
 
   const data = await res.json();
