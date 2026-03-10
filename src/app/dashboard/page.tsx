@@ -1,13 +1,37 @@
-import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+'use client';
 
-export default async function DashboardPage() {
-  const session = await auth();
-  if (!session) redirect('/');
+import { useState } from 'react';
+import { AircraftList } from '@/components/aircraft-list';
+import { MobileTabs } from '@/components/mobile-tabs';
+import { AircraftWithLive } from '@/types/aircraft';
+
+// Map placeholder — replaced in Stage 7
+function MapPlaceholder() {
+  return <div className="h-full w-full bg-muted flex items-center justify-center text-muted-foreground text-sm">Map coming in Stage 7</div>;
+}
+
+export default function DashboardPage() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [selectedAircraft, setSelectedAircraft] = useState<AircraftWithLive | null>(null);
+
+  const mapSlot = <MapPlaceholder />;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-2xl font-semibold">Welcome, {session.user?.name}</h1>
-    </div>
+    <>
+      {/* Mobile: tabbed layout */}
+      <div className="flex flex-1 flex-col md:hidden">
+        <MobileTabs onSelectAircraft={setSelectedAircraft} mapSlot={mapSlot} />
+      </div>
+
+      {/* Desktop: side-by-side layout */}
+      <div className="hidden md:flex flex-1 overflow-hidden">
+        <aside className="w-[35%] overflow-y-auto border-r">
+          <AircraftList onSelectAircraft={setSelectedAircraft} />
+        </aside>
+        <div className="flex-1">
+          {mapSlot}
+        </div>
+      </div>
+    </>
   );
 }

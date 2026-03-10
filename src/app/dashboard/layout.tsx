@@ -5,13 +5,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const session = await auth();
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex h-screen flex-col overflow-hidden">
       <Navbar
         userName={session?.user?.name}
         userEmail={session?.user?.email}
         userImage={session?.user?.image}
       />
-      <main className="flex flex-1 flex-col">{children}</main>
+      <main className="flex flex-1 flex-col overflow-hidden">{children}</main>
     </div>
   );
 }
