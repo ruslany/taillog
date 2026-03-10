@@ -2,6 +2,7 @@
 
 import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
+import { AircraftPhoto } from '@/components/aircraft-photo';
 import { AircraftWithLive } from '@/types/aircraft';
 
 function createPlaneIcon(heading: number | null): L.DivIcon {
@@ -31,8 +32,9 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
 
   return (
     <Marker position={[live.latitude, live.longitude]} icon={icon}>
-      <Popup maxWidth={240}>
+      <Popup maxWidth={260}>
         <div className="flex flex-col gap-1 text-sm">
+          <AircraftPhoto icao24={aircraft.icao24} size="full" />
           <p className="font-bold">{aircraft.tailNumber}</p>
           {aircraft.nickname && (
             <p className="text-muted-foreground text-xs">{aircraft.nickname}</p>

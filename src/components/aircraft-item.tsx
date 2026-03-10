@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { AircraftPhoto } from '@/components/aircraft-photo';
 import { AircraftWithLive } from '@/types/aircraft';
 
 interface AircraftItemProps {
@@ -27,8 +28,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps
     <div
       className="flex min-h-[48px] items-center gap-3 rounded-md px-1 py-2 hover:bg-muted/50"
     >
-      {/* Photo placeholder — replaced in Stage 8 */}
-      <div className="h-12 w-[72px] shrink-0 rounded bg-muted" />
+      <AircraftPhoto icao24={aircraft.icao24} size="thumb" />
 
       {/* Info */}
       <div
