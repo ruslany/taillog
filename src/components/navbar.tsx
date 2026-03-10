@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -38,7 +37,7 @@ export function Navbar({ userName, userEmail, userImage }: NavbarProps) {
 
   // Render Monitor on both server and first client render to avoid hydration mismatch.
   // theme is only available client-side after mount.
-  const ThemeIcon = mounted ? (themeIcons[(theme as keyof typeof themeIcons)] ?? Monitor) : Monitor;
+  const ThemeIcon = mounted ? (themeIcons[theme as keyof typeof themeIcons] ?? Monitor) : Monitor;
 
   const initials = userName
     ? userName
@@ -50,7 +49,7 @@ export function Navbar({ userName, userEmail, userImage }: NavbarProps) {
     : undefined;
 
   return (
-    <nav className="flex h-14 items-center justify-between border-b bg-background px-4" suppressHydrationWarning>
+    <nav className="flex h-14 items-center justify-between border-b bg-background px-4">
       <span className="text-lg font-semibold tracking-tight">Taillog</span>
 
       <div className="flex items-center gap-2">
@@ -65,17 +64,18 @@ export function Navbar({ userName, userEmail, userImage }: NavbarProps) {
               <AvatarFallback>{initials ?? <User className="h-4 w-4" />}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="font-normal">
-                <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{userName}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
-                </div>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
+          <DropdownMenuContent className="w-56" align="end">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{userName}</p>
+                <p className="text-xs leading-none text-muted-foreground">{userEmail}</p>
+              </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={() => signOut({ callbackUrl: '/' })}
+              className="cursor-pointer"
+            >
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sign out</span>
             </DropdownMenuItem>
