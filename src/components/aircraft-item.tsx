@@ -1,9 +1,22 @@
 'use client';
 
-import { Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Trash2Icon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogMedia,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { AircraftPhoto } from '@/components/aircraft-photo';
 import { AircraftWithLive } from '@/types/aircraft';
 
@@ -15,19 +28,19 @@ interface AircraftItemProps {
 
 export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps) {
   const isAirborne = aircraft.live?.airborne === true;
+  const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!window.confirm(`Remove ${aircraft.tailNumber} from your fleet?`)) return;
+    setDeleting(true);
     const res = await fetch(`/api/aircraft/${aircraft.id}`, { method: 'DELETE' });
+    setDeleting(false);
     if (res.ok) {
       onDelete(aircraft.id);
     }
   }
 
   return (
-    <div
-      className="flex min-h-[48px] items-center gap-3 rounded-md px-1 py-2 hover:bg-muted/50"
-    >
+    <div className="flex min-h-[48px] items-center gap-3 rounded-md px-1 py-2 hover:bg-muted/50">
       <AircraftPhoto icao24={aircraft.icao24} size="thumb" />
 
       {/* Info */}
@@ -53,20 +66,41 @@ export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps
       </div>
 
       {/* Delete */}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="shrink-0 text-muted-foreground hover:text-destructive"
-            onClick={handleDelete}
-            aria-label={`Delete ${aircraft.tailNumber}`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent>Delete aircraft</TooltipContent>
-      </Tooltip>
+      <AlertDialog>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="shrink-0 text-muted-foreground hover:text-destructive"
+                aria-label={`Delete ${aircraft.tailNumber}`}
+              >
+                <Trash2Icon className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+          </TooltipTrigger>
+          <TooltipContent>Delete aircraft</TooltipContent>
+        </Tooltip>
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
+              <Trash2Icon />
+            </AlertDialogMedia>
+            <AlertDialogTitle>Remove {aircraft.tailNumber}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove {aircraft.tailNumber}
+              {aircraft.nickname ? ` (${aircraft.nickname})` : ''} from your fleet.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" disabled={deleting} onClick={handleDelete}>
+              {deleting ? 'Removing…' : 'Remove'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

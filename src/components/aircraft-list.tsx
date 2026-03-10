@@ -1,9 +1,18 @@
 'use client';
 
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { AddAircraftForm } from '@/components/add-aircraft-form';
 import { AircraftItem } from '@/components/aircraft-item';
 import { AircraftWithLive } from '@/types/aircraft';
@@ -23,12 +32,30 @@ export function AircraftList({
   onAdded,
   onDeleted,
 }: AircraftListProps) {
+  const [open, setOpen] = useState(false);
+
+  function handleAdded(newAircraft: AircraftWithLive) {
+    onAdded(newAircraft);
+    setOpen(false);
+  }
+
   return (
     <TooltipProvider>
       <div className="flex flex-col gap-4 p-4">
-        <AddAircraftForm onAdded={onAdded} />
-
-        <Separator />
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="w-full">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Aircraft
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add Aircraft</DialogTitle>
+            </DialogHeader>
+            <AddAircraftForm key={String(open)} onAdded={handleAdded} />
+          </DialogContent>
+        </Dialog>
 
         {openskyError && (
           <Alert variant="destructive">
@@ -41,7 +68,7 @@ export function AircraftList({
 
         {aircraft.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">
-            No aircraft yet. Add one above.
+            No aircraft yet. Add one using the button above.
           </p>
         ) : (
           <div className="flex flex-col divide-y">
