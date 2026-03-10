@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Taillog',
-  description: 'Track the aircraft you\'ve flown on and follow them live on a map.',
+  description: "Track the aircraft you've flown on and follow them live on a map.",
 };
 
 export default function RootLayout({
