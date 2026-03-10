@@ -13,12 +13,27 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 import { AddAircraftForm } from '@/components/add-aircraft-form';
 import { AircraftItem } from '@/components/aircraft-item';
 import { AircraftWithLive } from '@/types/aircraft';
 
+function AircraftItemSkeleton() {
+  return (
+    <div className="flex min-h-[48px] items-center gap-3 px-1 py-2">
+      <Skeleton className="h-10 w-10 shrink-0 rounded-md" />
+      <div className="flex flex-1 flex-col gap-1.5">
+        <Skeleton className="h-3.5 w-20" />
+        <Skeleton className="h-5 w-24 rounded-full" />
+      </div>
+      <Skeleton className="h-8 w-8 shrink-0 rounded-md" />
+    </div>
+  );
+}
+
 interface AircraftListProps {
   aircraft: AircraftWithLive[];
+  loading: boolean;
   openskyError: boolean;
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
   onAdded: (newAircraft: AircraftWithLive) => void;
@@ -27,6 +42,7 @@ interface AircraftListProps {
 
 export function AircraftList({
   aircraft,
+  loading,
   openskyError,
   onSelectAircraft,
   onAdded,
@@ -66,7 +82,13 @@ export function AircraftList({
           </Alert>
         )}
 
-        {aircraft.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col divide-y">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <AircraftItemSkeleton key={i} />
+            ))}
+          </div>
+        ) : aircraft.length === 0 ? (
           <p className="text-center text-sm text-muted-foreground">
             No aircraft yet. Add one using the button above.
           </p>

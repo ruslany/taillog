@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const [aircraft, setAircraft] = useState<AircraftWithLive[]>([]);
   const [openskyError, setOpenskyError] = useState(false);
   const [selectedAircraft, setSelectedAircraft] = useState<AircraftWithLive | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchAircraft = useCallback(async () => {
     const res = await fetch('/api/aircraft');
@@ -19,6 +20,7 @@ export default function DashboardPage() {
     const data = await res.json();
     setAircraft(data.aircraft);
     setOpenskyError(data.openskyError ?? false);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export default function DashboardPage() {
       <div className="flex flex-1 flex-col md:hidden">
         <MobileTabs
           aircraft={aircraft}
+          loading={loading}
           openskyError={openskyError}
           onSelectAircraft={setSelectedAircraft}
           onAdded={handleAdded}
@@ -58,6 +61,7 @@ export default function DashboardPage() {
         <aside className="w-[35%] overflow-y-auto border-r">
           <AircraftList
             aircraft={aircraft}
+            loading={loading}
             openskyError={openskyError}
             onSelectAircraft={setSelectedAircraft}
             onAdded={handleAdded}
