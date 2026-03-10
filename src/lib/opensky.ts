@@ -4,33 +4,44 @@ const TOKEN_ENDPOINT =
 let cachedToken: string | null = null;
 let tokenExpiresAt = 0;
 
-async function getAccessToken(): Promise<string> {
+async function getAccessToken(): Promise<string | null> {
+  const clientId = process.env.OPENSKY_CLIENT_ID;
+  const clientSecret = process.env.OPENSKY_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return null;
+
   if (cachedToken && Date.now() < tokenExpiresAt) {
     return cachedToken;
   }
 
   const params = new URLSearchParams({
     grant_type: 'client_credentials',
-    client_id: process.env.OPENSKY_CLIENT_ID!,
-    client_secret: process.env.OPENSKY_CLIENT_SECRET!,
+    client_id: clientId,
+    client_secret: clientSecret,
   });
 
-  const res = await fetch(TOKEN_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: params.toString(),
-  });
+  try {
+    const res = await fetch(TOKEN_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString(),
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`OpenSky token request failed: ${res.status} ${body}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      console.warn(`[OpenSky] Token request failed: ${res.status} ${body} — falling back to anonymous`);
+      return null;
+    }
+
+    const data = await res.json();
+    cachedToken = data.access_token as string;
+    // Expire 60 seconds early to be safe (token is valid for 30 min = 1800s)
+    tokenExpiresAt = Date.now() + (data.expires_in - 60) * 1000;
+    return cachedToken;
+  } catch (err) {
+    console.warn('[OpenSky] Token fetch error, falling back to anonymous:', err);
+    return null;
   }
-
-  const data = await res.json();
-  cachedToken = data.access_token as string;
-  // Expire 60 seconds early to be safe (token is valid for 30 min = 1800s)
-  tokenExpiresAt = Date.now() + (data.expires_in - 60) * 1000;
-  return cachedToken;
 }
 
 export interface LiveState {
@@ -60,8 +71,13 @@ export async function fetchLivePositions(icao24List: string[]): Promise<Map<stri
     params.append('icao24', code.toLowerCase());
   }
 
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`https://opensky-network.org/api/states/all?${params.toString()}`, {
-    headers: { Authorization: `Bearer ${token}` },
+    headers,
   });
 
   if (!res.ok) {
