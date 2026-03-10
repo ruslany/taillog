@@ -5,11 +5,22 @@ import { AircraftList } from '@/components/aircraft-list';
 import { AircraftWithLive } from '@/types/aircraft';
 
 interface MobileTabsProps {
+  aircraft: AircraftWithLive[];
+  openskyError: boolean;
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
+  onAdded: (newAircraft: AircraftWithLive) => void;
+  onDeleted: (id: string) => void;
   mapSlot: React.ReactNode;
 }
 
-export function MobileTabs({ onSelectAircraft, mapSlot }: MobileTabsProps) {
+export function MobileTabs({
+  aircraft,
+  openskyError,
+  onSelectAircraft,
+  onAdded,
+  onDeleted,
+  mapSlot,
+}: MobileTabsProps) {
   return (
     <Tabs defaultValue="fleet" className="flex flex-1 flex-col">
       <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
@@ -17,7 +28,13 @@ export function MobileTabs({ onSelectAircraft, mapSlot }: MobileTabsProps) {
         <TabsTrigger value="map">Map</TabsTrigger>
       </TabsList>
       <TabsContent value="fleet" className="flex-1 overflow-y-auto mt-0">
-        <AircraftList onSelectAircraft={onSelectAircraft} />
+        <AircraftList
+          aircraft={aircraft}
+          openskyError={openskyError}
+          onSelectAircraft={onSelectAircraft}
+          onAdded={onAdded}
+          onDeleted={onDeleted}
+        />
       </TabsContent>
       <TabsContent value="map" className="flex-1 mt-0 p-0">
         {mapSlot}

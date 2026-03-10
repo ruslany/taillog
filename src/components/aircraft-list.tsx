@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Separator } from '@/components/ui/separator';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -10,42 +9,24 @@ import { AircraftItem } from '@/components/aircraft-item';
 import { AircraftWithLive } from '@/types/aircraft';
 
 interface AircraftListProps {
+  aircraft: AircraftWithLive[];
+  openskyError: boolean;
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
+  onAdded: (newAircraft: AircraftWithLive) => void;
+  onDeleted: (id: string) => void;
 }
 
-export function AircraftList({ onSelectAircraft }: AircraftListProps) {
-  const [aircraft, setAircraft] = useState<AircraftWithLive[]>([]);
-  const [openskyError, setOpenskyError] = useState(false);
-
-  const fetchAircraft = useCallback(async () => {
-    const res = await fetch('/api/aircraft');
-    if (!res.ok) return;
-    const data = await res.json();
-    setAircraft(data.aircraft);
-    setOpenskyError(data.openskyError ?? false);
-  }, []);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchAircraft();
-    const id = setInterval(fetchAircraft, 30_000);
-    return () => clearInterval(id);
-  }, [fetchAircraft]);
-
-  function handleAdded(newAircraft: AircraftWithLive) {
-    setAircraft((prev) => [newAircraft, ...prev]);
-    // Refresh to get live data
-    fetchAircraft();
-  }
-
-  function handleDeleted(id: string) {
-    setAircraft((prev) => prev.filter((a) => a.id !== id));
-  }
-
+export function AircraftList({
+  aircraft,
+  openskyError,
+  onSelectAircraft,
+  onAdded,
+  onDeleted,
+}: AircraftListProps) {
   return (
     <TooltipProvider>
       <div className="flex flex-col gap-4 p-4">
-        <AddAircraftForm onAdded={handleAdded} />
+        <AddAircraftForm onAdded={onAdded} />
 
         <Separator />
 
@@ -68,7 +49,7 @@ export function AircraftList({ onSelectAircraft }: AircraftListProps) {
               <AircraftItem
                 key={a.id}
                 aircraft={a}
-                onDelete={handleDeleted}
+                onDelete={onDeleted}
                 onSelect={onSelectAircraft}
               />
             ))}

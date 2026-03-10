@@ -1,32 +1,68 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { AircraftList } from '@/components/aircraft-list';
 import { MobileTabs } from '@/components/mobile-tabs';
 import { AircraftWithLive } from '@/types/aircraft';
 
-// Map placeholder — replaced in Stage 7
-function MapPlaceholder() {
-  return <div className="h-full w-full bg-muted flex items-center justify-center text-muted-foreground text-sm">Map coming in Stage 7</div>;
-}
+const FleetMap = dynamic(() => import('@/components/map').then((m) => m.FleetMap), { ssr: false });
 
 export default function DashboardPage() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [aircraft, setAircraft] = useState<AircraftWithLive[]>([]);
+  const [openskyError, setOpenskyError] = useState(false);
   const [selectedAircraft, setSelectedAircraft] = useState<AircraftWithLive | null>(null);
 
-  const mapSlot = <MapPlaceholder />;
+  const fetchAircraft = useCallback(async () => {
+    const res = await fetch('/api/aircraft');
+    if (!res.ok) return;
+    const data = await res.json();
+    setAircraft(data.aircraft);
+    setOpenskyError(data.openskyError ?? false);
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchAircraft();
+    const id = setInterval(fetchAircraft, 30_000);
+    return () => clearInterval(id);
+  }, [fetchAircraft]);
+
+  function handleAdded(newAircraft: AircraftWithLive) {
+    setAircraft((prev) => [newAircraft, ...prev]);
+    fetchAircraft();
+  }
+
+  function handleDeleted(id: string) {
+    setAircraft((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  const mapSlot = <FleetMap aircraft={aircraft} selectedAircraft={selectedAircraft} />;
 
   return (
     <>
       {/* Mobile: tabbed layout */}
       <div className="flex flex-1 flex-col md:hidden">
-        <MobileTabs onSelectAircraft={setSelectedAircraft} mapSlot={mapSlot} />
+        <MobileTabs
+          aircraft={aircraft}
+          openskyError={openskyError}
+          onSelectAircraft={setSelectedAircraft}
+          onAdded={handleAdded}
+          onDeleted={handleDeleted}
+          mapSlot={mapSlot}
+        />
       </div>
 
       {/* Desktop: side-by-side layout */}
       <div className="hidden md:flex flex-1 overflow-hidden">
         <aside className="w-[35%] overflow-y-auto border-r">
-          <AircraftList onSelectAircraft={setSelectedAircraft} />
+          <AircraftList
+            aircraft={aircraft}
+            openskyError={openskyError}
+            onSelectAircraft={setSelectedAircraft}
+            onAdded={handleAdded}
+            onDeleted={handleDeleted}
+          />
         </aside>
         <div className="flex-1">
           {mapSlot}
