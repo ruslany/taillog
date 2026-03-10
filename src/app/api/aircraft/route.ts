@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import { fetchLivePositions } from '@/lib/opensky';
+import { fetchLivePositions } from '@/lib/livetracking';
 
 export async function GET() {
   const session = await auth();
@@ -15,14 +15,14 @@ export async function GET() {
   });
 
   let liveMap = new Map();
-  let openskyError = false;
+  let liveError = false;
 
   if (aircraft.length > 0) {
     try {
       liveMap = await fetchLivePositions(aircraft.map((a) => a.icao24));
     } catch (err) {
-      console.error('[OpenSky] fetchLivePositions failed:', err);
-      openskyError = true;
+      console.error('[livetracking] fetchLivePositions failed:', err);
+      liveError = true;
     }
   }
 
@@ -35,7 +35,7 @@ export async function GET() {
     live: liveMap.get(a.icao24.toLowerCase()) ?? null,
   }));
 
-  return NextResponse.json({ aircraft: response, openskyError });
+  return NextResponse.json({ aircraft: response, openskyError: liveError });
 }
 
 export async function POST(req: Request) {
