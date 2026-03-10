@@ -63,9 +63,7 @@ export function AircraftPhoto({ icao24, size }: AircraftPhotoProps) {
         style={{ width, height }}
       />
       {photo.photographer && (
-        <span className="truncate text-[10px] text-muted-foreground">
-          © {photo.photographer}
-        </span>
+        <span className="truncate text-[10px] text-muted-foreground">© {photo.photographer}</span>
       )}
     </div>
   );

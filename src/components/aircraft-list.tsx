@@ -76,9 +76,7 @@ export function AircraftList({
         {openskyError && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
-            <AlertDescription>
-              Live tracking unavailable — OpenSky may be down.
-            </AlertDescription>
+            <AlertDescription>Live tracking unavailable — OpenSky may be down.</AlertDescription>
           </Alert>
         )}
 

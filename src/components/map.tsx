@@ -36,13 +36,13 @@ export function FleetMap({ aircraft, selectedAircraft }: FleetMapProps) {
 
   return (
     <div className="relative z-0 h-full w-full">
-    <MapContainer center={[30, 10]} zoom={3} className="h-full w-full">
-      <TileLayer key={tileUrl} url={tileUrl} attribution={attribution} />
-      <MapController selectedAircraft={selectedAircraft} />
-      {airborne.map((a) => (
-        <PlaneMarker key={a.id} aircraft={a} />
-      ))}
-    </MapContainer>
+      <MapContainer center={[30, 10]} zoom={3} className="h-full w-full">
+        <TileLayer key={tileUrl} url={tileUrl} attribution={attribution} />
+        <MapController selectedAircraft={selectedAircraft} />
+        {airborne.map((a) => (
+          <PlaneMarker key={a.id} aircraft={a} />
+        ))}
+      </MapContainer>
     </div>
   );
 }

@@ -68,9 +68,7 @@ export default function DashboardPage() {
             onDeleted={handleDeleted}
           />
         </aside>
-        <div className="flex-1">
-          {mapSlot}
-        </div>
+        <div className="flex-1">{mapSlot}</div>
       </div>
     </>
   );
