@@ -31,7 +31,11 @@ export async function fetchFlightRoute(callsign: string): Promise<FlightRoute | 
   const params = new URLSearchParams({ access_key: apiKey, flight_icao: callsign });
   const res = await fetch(`http://api.aviationstack.com/v1/flights?${params.toString()}`);
   if (!res.ok) {
-    console.error(`[AviationStack] Request failed: ${res.status}`);
+    if (res.status === 429) {
+      console.info('[AviationStack] Monthly quota exceeded');
+    } else {
+      console.error(`[AviationStack] Request failed: ${res.status}`);
+    }
     return null;
   }
 
