@@ -38,6 +38,7 @@ interface AircraftListProps {
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
   onAdded: (newAircraft: AircraftWithLive) => void;
   onDeleted: (id: string) => void;
+  onEdited: (updated: AircraftWithLive) => void;
 }
 
 export function AircraftList({
@@ -47,6 +48,7 @@ export function AircraftList({
   onSelectAircraft,
   onAdded,
   onDeleted,
+  onEdited,
 }: AircraftListProps) {
   const [open, setOpen] = useState(false);
 
@@ -98,6 +100,7 @@ export function AircraftList({
                 aircraft={a}
                 onDelete={onDeleted}
                 onSelect={onSelectAircraft}
+                onEdited={onEdited}
               />
             ))}
           </div>

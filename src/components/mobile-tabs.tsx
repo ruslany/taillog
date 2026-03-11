@@ -11,6 +11,7 @@ interface MobileTabsProps {
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
   onAdded: (newAircraft: AircraftWithLive) => void;
   onDeleted: (id: string) => void;
+  onEdited: (updated: AircraftWithLive) => void;
   mapSlot: React.ReactNode;
 }
 
@@ -21,6 +22,7 @@ export function MobileTabs({
   onSelectAircraft,
   onAdded,
   onDeleted,
+  onEdited,
   mapSlot,
 }: MobileTabsProps) {
   return (
@@ -37,6 +39,7 @@ export function MobileTabs({
           onSelectAircraft={onSelectAircraft}
           onAdded={onAdded}
           onDeleted={onDeleted}
+          onEdited={onEdited}
         />
       </TabsContent>
       <TabsContent value="map" className="flex-1 mt-0 p-0">

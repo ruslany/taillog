@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Trash2Icon } from 'lucide-react';
+import { Trash2Icon, PencilIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   AlertDialog,
@@ -17,6 +19,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { AircraftPhoto } from '@/components/aircraft-photo';
 import { AircraftWithLive } from '@/types/aircraft';
 
@@ -24,11 +34,29 @@ interface AircraftItemProps {
   aircraft: AircraftWithLive;
   onDelete: (id: string) => void;
   onSelect: (aircraft: AircraftWithLive) => void;
+  onEdited: (updated: AircraftWithLive) => void;
 }
 
-export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps) {
+export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: AircraftItemProps) {
   const isAirborne = aircraft.live?.airborne === true;
   const [deleting, setDeleting] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [nickname, setNickname] = useState(aircraft.nickname ?? '');
+  const [saving, setSaving] = useState(false);
+
+  async function handleSaveNickname() {
+    setSaving(true);
+    const res = await fetch(`/api/aircraft/${aircraft.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nickname }),
+    });
+    setSaving(false);
+    if (res.ok) {
+      onEdited({ ...aircraft, nickname: nickname.trim() || null });
+      setEditOpen(false);
+    }
+  }
 
   async function handleDelete() {
     setDeleting(true);
@@ -72,6 +100,51 @@ export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps
           <span className="truncate text-xs text-muted-foreground">{aircraft.live.aircraftType}</span>
         )}
       </div>
+
+      {/* Edit nickname */}
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-muted-foreground hover:text-foreground"
+            aria-label={`Edit ${aircraft.tailNumber}`}
+            onClick={() => { setNickname(aircraft.nickname ?? ''); setEditOpen(true); }}
+          >
+            <PencilIcon className="h-4 w-4" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Edit nickname</TooltipContent>
+      </Tooltip>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{aircraft.tailNumber}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            <Card className="items-center p-4">
+              <AircraftPhoto icao24={aircraft.icao24} size="full" />
+            </Card>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="nickname-input">Nickname</Label>
+              <Input
+                id="nickname-input"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="e.g. My favourite plane"
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveNickname(); }}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveNickname} disabled={saving}>
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete */}
       <AlertDialog>

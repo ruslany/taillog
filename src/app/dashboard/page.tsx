@@ -39,6 +39,10 @@ export default function DashboardPage() {
     setAircraft((prev) => prev.filter((a) => a.id !== id));
   }
 
+  function handleEdited(updated: AircraftWithLive) {
+    setAircraft((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
+  }
+
   const mapSlot = <FleetMap aircraft={aircraft} selectedAircraft={selectedAircraft} />;
 
   return (
@@ -52,6 +56,7 @@ export default function DashboardPage() {
           onSelectAircraft={setSelectedAircraft}
           onAdded={handleAdded}
           onDeleted={handleDeleted}
+          onEdited={handleEdited}
           mapSlot={mapSlot}
         />
       </div>
@@ -66,6 +71,7 @@ export default function DashboardPage() {
             onSelectAircraft={setSelectedAircraft}
             onAdded={handleAdded}
             onDeleted={handleDeleted}
+            onEdited={handleEdited}
           />
         </aside>
         <div className="flex-1">{mapSlot}</div>
