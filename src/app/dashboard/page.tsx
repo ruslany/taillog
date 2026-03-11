@@ -11,6 +11,7 @@ import {
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { AircraftWithLive } from '@/types/aircraft';
 
@@ -74,6 +75,14 @@ export default function DashboardPage() {
               <BreadcrumbItem>
                 <BreadcrumbPage>My Fleet</BreadcrumbPage>
               </BreadcrumbItem>
+              {selectedAircraft && (
+                <>
+                  <BreadcrumbSeparator />
+                  <BreadcrumbItem>
+                    <BreadcrumbPage>{selectedAircraft.tailNumber}</BreadcrumbPage>
+                  </BreadcrumbItem>
+                </>
+              )}
             </BreadcrumbList>
           </Breadcrumb>
         </header>
