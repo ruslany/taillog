@@ -19,10 +19,10 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
-  const { nickname } = (await req.json()) as { nickname?: string };
+  const { notes } = (await req.json()) as { notes?: string };
   const updated = await prisma.aircraft.update({
     where: { id },
-    data: { nickname: nickname?.trim() || null },
+    data: { notes: notes?.trim() || null },
   });
 
   return NextResponse.json(updated);

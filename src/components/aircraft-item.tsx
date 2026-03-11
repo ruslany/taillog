@@ -42,9 +42,9 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
   const isAirborne = aircraft.live?.airborne === true;
   const [deleting, setDeleting] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [nickname, setNickname] = useState(aircraft.nickname ?? '');
+  const [notes, setNotes] = useState(aircraft.notes ?? '');
   const [saving, setSaving] = useState(false);
-  const [lightbox, setLightbox] = useState<{
+  const [editPhoto, setEditPhoto] = useState<{
     url: string;
     urlLarge: string | null;
     photographer: string | null;
@@ -55,13 +55,13 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
     const res = await fetch(`/api/aircraft/${aircraft.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ nickname }),
+      body: JSON.stringify({ notes }),
     });
     setSaving(false);
     if (res.ok) {
-      onEdited({ ...aircraft, nickname: nickname.trim() || null });
+      onEdited({ ...aircraft, notes: notes.trim() || null });
       setEditOpen(false);
-      toast.success(`${aircraft.tailNumber} nickname updated.`);
+      toast.success(`${aircraft.tailNumber} notes updated.`);
     }
   }
 
@@ -79,7 +79,11 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
       <AircraftPhoto
         icao24={aircraft.icao24}
         size="thumb"
-        onPhotoClick={(url, urlLarge, photographer) => setLightbox({ url, urlLarge, photographer })}
+        onPhotoClick={(url, urlLarge, photographer) => {
+          setEditPhoto({ url, urlLarge, photographer });
+          setNotes(aircraft.notes ?? '');
+          setEditOpen(true);
+        }}
       />
 
       {/* Info */}
@@ -93,8 +97,8 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
         }}
       >
         <span className="truncate font-semibold leading-tight">{aircraft.tailNumber}</span>
-        {aircraft.nickname && (
-          <span className="truncate text-xs text-muted-foreground">{aircraft.nickname}</span>
+        {aircraft.notes && (
+          <span className="truncate text-xs text-muted-foreground">{aircraft.notes}</span>
         )}
         <Badge
           variant={isAirborne ? 'default' : 'secondary'}
@@ -114,7 +118,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
         )}
       </div>
 
-      {/* Edit nickname */}
+      {/* Edit notes */}
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -123,32 +127,53 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
             className="shrink-0 text-muted-foreground hover:text-foreground"
             aria-label={`Edit ${aircraft.tailNumber}`}
             onClick={() => {
-              setNickname(aircraft.nickname ?? '');
+              setNotes(aircraft.notes ?? '');
+              setEditPhoto(null);
               setEditOpen(true);
             }}
           >
             <PencilIcon className="h-4 w-4" />
           </Button>
         </TooltipTrigger>
-        <TooltipContent>Edit nickname</TooltipContent>
+        <TooltipContent>Edit notes</TooltipContent>
       </Tooltip>
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent>
+      <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditPhoto(null); }}>
+        <DialogContent className="max-w-[90vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{aircraft.tailNumber}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-4">
-            <Card className="items-center p-4">
-              <AircraftPhoto icao24={aircraft.icao24} size="full" />
-            </Card>
+            {editPhoto ? (
+              <div className="flex flex-col items-center gap-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={editPhoto.urlLarge ?? editPhoto.url}
+                  alt="Aircraft photo"
+                  className="max-h-[50vh] max-w-full rounded object-contain"
+                />
+                {editPhoto.photographer && (
+                  <span className="text-sm text-muted-foreground">© {editPhoto.photographer}</span>
+                )}
+              </div>
+            ) : (
+              <Card className="items-center p-4">
+                <AircraftPhoto
+                  icao24={aircraft.icao24}
+                  size="full"
+                  onPhotoLoad={(url, urlLarge, photographer) =>
+                    setEditPhoto({ url, urlLarge, photographer })
+                  }
+                />
+              </Card>
+            )}
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="nickname-input">Nickname</Label>
+              <Label htmlFor="notes-input">Notes</Label>
               <Input
-                id="nickname-input"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                placeholder="e.g. My favourite plane"
+                id="notes-input"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="e.g. Seen at KSFO, June 2024"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSaveNickname();
                 }}
@@ -163,28 +188,6 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
               {saving ? 'Saving…' : 'Save'}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Photo lightbox */}
-      <Dialog open={!!lightbox} onOpenChange={(open) => !open && setLightbox(null)}>
-        <DialogContent className="flex max-w-[90vw] flex-col items-center gap-3 p-4">
-          <DialogHeader className="w-full">
-            <DialogTitle>{aircraft.tailNumber}</DialogTitle>
-          </DialogHeader>
-          {lightbox && (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={lightbox.urlLarge ?? lightbox.url}
-                alt="Aircraft photo"
-                className="max-h-[70vh] max-w-full rounded object-contain"
-              />
-              {lightbox.photographer && (
-                <span className="text-sm text-muted-foreground">© {lightbox.photographer}</span>
-              )}
-            </>
-          )}
         </DialogContent>
       </Dialog>
 
@@ -213,7 +216,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
             <AlertDialogTitle>Remove {aircraft.tailNumber}?</AlertDialogTitle>
             <AlertDialogDescription>
               This will remove {aircraft.tailNumber}
-              {aircraft.nickname ? ` (${aircraft.nickname})` : ''} from your fleet.
+              {aircraft.notes ? ` (${aircraft.notes})` : ''} from your fleet.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

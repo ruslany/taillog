@@ -71,7 +71,7 @@ model Aircraft {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tailNumber String
   icao24     String
-  nickname   String?
+  notes      String?
   addedAt    DateTime @default(now())
 
   @@unique([userId, icao24])

@@ -12,6 +12,7 @@ interface AircraftPhotoProps {
   icao24: string;
   size: 'thumb' | 'full';
   onPhotoClick?: (url: string, urlLarge: string | null, photographer: string | null) => void;
+  onPhotoLoad?: (url: string, urlLarge: string | null, photographer: string | null) => void;
 }
 
 const SIZES = {
@@ -26,16 +27,21 @@ const PLANE_SVG = (
   />
 );
 
-export function AircraftPhoto({ icao24, size, onPhotoClick }: AircraftPhotoProps) {
+export function AircraftPhoto({ icao24, size, onPhotoClick, onPhotoLoad }: AircraftPhotoProps) {
   const [photo, setPhoto] = useState<PhotoData | null>(null);
   const { width, height } = SIZES[size];
 
   useEffect(() => {
     fetch(`/api/aircraft/${icao24}/photo`)
       .then((r) => r.json())
-      .then(setPhoto)
+      .then((data: PhotoData) => {
+        setPhoto(data);
+        if (data.url && onPhotoLoad) {
+          onPhotoLoad(data.url, data.urlLarge, data.photographer);
+        }
+      })
       .catch(() => setPhoto({ url: null, urlLarge: null, photographer: null }));
-  }, [icao24]);
+  }, [icao24]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!photo?.url) {
     return (
