@@ -63,7 +63,11 @@ export function AircraftPhoto({ icao24, size, onPhotoClick }: AircraftPhotoProps
         alt="Aircraft photo"
         className={`rounded object-cover${onPhotoClick ? ' cursor-pointer' : ''}`}
         style={{ width, height }}
-        onClick={onPhotoClick ? () => onPhotoClick(photo.url!, photo.urlLarge, photo.photographer) : undefined}
+        onClick={
+          onPhotoClick
+            ? () => onPhotoClick(photo.url!, photo.urlLarge, photo.photographer)
+            : undefined
+        }
       />
       {photo.photographer && (
         <span className="truncate text-[10px] text-muted-foreground">© {photo.photographer}</span>
