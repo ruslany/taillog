@@ -20,7 +20,7 @@ export interface AircraftWithLive {
   id: string;
   tailNumber: string;
   icao24: string;
-  nickname: string | null;
+  notes: string | null;
   addedAt: string;
   live: LiveState | null;
   route: FlightRoute | null;

@@ -12,7 +12,7 @@ interface AddAircraftFormProps {
 
 export function AddAircraftForm({ onAdded }: AddAircraftFormProps) {
   const [tailNumber, setTailNumber] = useState('');
-  const [nickname, setNickname] = useState('');
+  const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +38,7 @@ export function AddAircraftForm({ onAdded }: AddAircraftFormProps) {
       const addRes = await fetch('/api/aircraft', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tailNumber, icao24, nickname: nickname || undefined }),
+        body: JSON.stringify({ tailNumber, icao24, notes: notes || undefined }),
       });
 
       if (addRes.status === 409) {
@@ -53,7 +53,7 @@ export function AddAircraftForm({ onAdded }: AddAircraftFormProps) {
       const aircraft = await addRes.json();
       onAdded({ ...aircraft, live: null });
       setTailNumber('');
-      setNickname('');
+      setNotes('');
     } finally {
       setLoading(false);
     }
@@ -73,12 +73,12 @@ export function AddAircraftForm({ onAdded }: AddAircraftFormProps) {
         />
       </div>
       <div className="space-y-1">
-        <Label htmlFor="nickname">Nickname (optional)</Label>
+        <Label htmlFor="notes">Notes (optional)</Label>
         <Input
-          id="nickname"
+          id="notes"
           placeholder="United flight to Tokyo"
-          value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
           className="w-full"
         />
       </div>

@@ -35,7 +35,7 @@ export async function GET() {
         id: a.id,
         tailNumber: a.tailNumber,
         icao24: a.icao24,
-        nickname: a.nickname,
+        notes: a.notes,
         addedAt: a.addedAt,
         live,
         route,
@@ -53,10 +53,10 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { tailNumber, icao24, nickname } = body as {
+  const { tailNumber, icao24, notes } = body as {
     tailNumber: string;
     icao24: string;
-    nickname?: string;
+    notes?: string;
   };
 
   if (!tailNumber || !icao24) {
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         userId: session.user.id,
         tailNumber: tailNumber.toUpperCase(),
         icao24: icao24.toLowerCase(),
-        nickname: nickname ?? null,
+        notes: notes ?? null,
       },
     });
     return NextResponse.json(aircraft, { status: 201 });
