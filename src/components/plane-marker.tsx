@@ -43,9 +43,17 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
             {aircraft.route && (
               <>
                 <span className="text-muted-foreground">From</span>
-                <span>{aircraft.route.origin ? `${aircraft.route.origin.iata} — ${aircraft.route.origin.name}` : '—'}</span>
+                <span>
+                  {aircraft.route.origin
+                    ? `${aircraft.route.origin.iata} — ${aircraft.route.origin.name}`
+                    : '—'}
+                </span>
                 <span className="text-muted-foreground">To</span>
-                <span>{aircraft.route.destination ? `${aircraft.route.destination.iata} — ${aircraft.route.destination.name}` : '—'}</span>
+                <span>
+                  {aircraft.route.destination
+                    ? `${aircraft.route.destination.iata} — ${aircraft.route.destination.name}`
+                    : '—'}
+                </span>
               </>
             )}
             {live.aircraftType && (

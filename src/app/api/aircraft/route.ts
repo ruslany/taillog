@@ -30,8 +30,7 @@ export async function GET() {
   const response = await Promise.all(
     aircraft.map(async (a) => {
       const live = liveMap.get(a.icao24.toLowerCase()) ?? null;
-      const route =
-        live?.airborne && live.callsign ? await fetchFlightRoute(live.callsign) : null;
+      const route = live?.airborne && live.callsign ? await fetchFlightRoute(live.callsign) : null;
       return {
         id: a.id,
         tailNumber: a.tailNumber,

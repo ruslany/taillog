@@ -97,7 +97,9 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
           </span>
         )}
         {isAirborne && aircraft.live?.aircraftType && (
-          <span className="truncate text-xs text-muted-foreground">{aircraft.live.aircraftType}</span>
+          <span className="truncate text-xs text-muted-foreground">
+            {aircraft.live.aircraftType}
+          </span>
         )}
       </div>
 
@@ -109,7 +111,10 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
             size="icon"
             className="shrink-0 text-muted-foreground hover:text-foreground"
             aria-label={`Edit ${aircraft.tailNumber}`}
-            onClick={() => { setNickname(aircraft.nickname ?? ''); setEditOpen(true); }}
+            onClick={() => {
+              setNickname(aircraft.nickname ?? '');
+              setEditOpen(true);
+            }}
           >
             <PencilIcon className="h-4 w-4" />
           </Button>
@@ -133,12 +138,16 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="e.g. My favourite plane"
-                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveNickname(); }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleSaveNickname();
+                }}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>
+              Cancel
+            </Button>
             <Button onClick={handleSaveNickname} disabled={saving}>
               {saving ? 'Saving…' : 'Save'}
             </Button>
