@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Trash2Icon, PencilIcon } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -55,6 +56,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
     if (res.ok) {
       onEdited({ ...aircraft, nickname: nickname.trim() || null });
       setEditOpen(false);
+      toast.success(`${aircraft.tailNumber} nickname updated.`);
     }
   }
 

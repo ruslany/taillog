@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
 import { AircraftList } from '@/components/aircraft-list';
 import { MobileTabs } from '@/components/mobile-tabs';
@@ -33,10 +34,13 @@ export default function DashboardPage() {
   function handleAdded(newAircraft: AircraftWithLive) {
     setAircraft((prev) => [newAircraft, ...prev]);
     fetchAircraft();
+    toast.success(`${newAircraft.tailNumber} added to your fleet.`);
   }
 
   function handleDeleted(id: string) {
+    const removed = aircraft.find((a) => a.id === id);
     setAircraft((prev) => prev.filter((a) => a.id !== id));
+    if (removed) toast.success(`${removed.tailNumber} removed from your fleet.`);
   }
 
   function handleEdited(updated: AircraftWithLive) {

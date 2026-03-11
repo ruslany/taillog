@@ -64,8 +64,10 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
             )}
             <span className="text-muted-foreground">Altitude</span>
             <span>{live.altitude != null ? `${live.altitude.toLocaleString()} ft` : '—'}</span>
-            <span className="text-muted-foreground">Speed</span>
-            <span>{live.velocity != null ? `${live.velocity} kt` : '—'}</span>
+            <span className="text-muted-foreground">Speed (mph)</span>
+            <span>{live.velocity != null ? `${Math.round(live.velocity * 1.151)} mph` : '—'}</span>
+            <span className="text-muted-foreground">Speed (km/h)</span>
+            <span>{live.velocity != null ? `${Math.round(live.velocity * 1.852)} km/h` : '—'}</span>
             <span className="text-muted-foreground">Heading</span>
             <span>{live.heading != null ? `${live.heading}°` : '—'}</span>
             <span className="text-muted-foreground">Country</span>
