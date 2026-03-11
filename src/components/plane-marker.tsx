@@ -36,9 +36,7 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
         <div className="flex flex-col gap-0.5 text-sm">
           <AircraftPhoto icao24={aircraft.icao24} size="full" />
           <div className="font-bold">{aircraft.tailNumber}</div>
-          {aircraft.notes && (
-            <div className="text-muted-foreground text-xs">{aircraft.notes}</div>
-          )}
+          {aircraft.notes && <div className="text-muted-foreground text-xs">{aircraft.notes}</div>}
           <div className="mt-0 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
             {aircraft.route && (
               <>

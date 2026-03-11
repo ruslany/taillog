@@ -138,7 +138,13 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
         <TooltipContent>Edit notes</TooltipContent>
       </Tooltip>
 
-      <Dialog open={editOpen} onOpenChange={(open) => { setEditOpen(open); if (!open) setEditPhoto(null); }}>
+      <Dialog
+        open={editOpen}
+        onOpenChange={(open) => {
+          setEditOpen(open);
+          if (!open) setEditPhoto(null);
+        }}
+      >
         <DialogContent className="max-w-[90vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{aircraft.tailNumber}</DialogTitle>
