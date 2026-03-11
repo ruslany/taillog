@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { fetchLivePositions } from '@/lib/livetracking';
+import { fetchFlightRoute } from '@/lib/aviationstack';
 
 export async function GET() {
   const session = await auth();
@@ -26,16 +27,24 @@ export async function GET() {
     }
   }
 
-  const response = aircraft.map((a) => ({
-    id: a.id,
-    tailNumber: a.tailNumber,
-    icao24: a.icao24,
-    nickname: a.nickname,
-    addedAt: a.addedAt,
-    live: liveMap.get(a.icao24.toLowerCase()) ?? null,
-  }));
+  const response = await Promise.all(
+    aircraft.map(async (a) => {
+      const live = liveMap.get(a.icao24.toLowerCase()) ?? null;
+      const route =
+        live?.airborne && live.callsign ? await fetchFlightRoute(live.callsign) : null;
+      return {
+        id: a.id,
+        tailNumber: a.tailNumber,
+        icao24: a.icao24,
+        nickname: a.nickname,
+        addedAt: a.addedAt,
+        live,
+        route,
+      };
+    }),
+  );
 
-  return NextResponse.json({ aircraft: response, openskyError: liveError });
+  return NextResponse.json({ aircraft: response, liveError });
 }
 
 export async function POST(req: Request) {

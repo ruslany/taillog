@@ -10,7 +10,7 @@ const FleetMap = dynamic(() => import('@/components/map').then((m) => m.FleetMap
 
 export default function DashboardPage() {
   const [aircraft, setAircraft] = useState<AircraftWithLive[]>([]);
-  const [openskyError, setOpenskyError] = useState(false);
+  const [liveError, setLiveError] = useState(false);
   const [selectedAircraft, setSelectedAircraft] = useState<AircraftWithLive | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +19,7 @@ export default function DashboardPage() {
     if (!res.ok) return;
     const data = await res.json();
     setAircraft(data.aircraft);
-    setOpenskyError(data.openskyError ?? false);
+    setLiveError(data.liveError ?? false);
     setLoading(false);
   }, []);
 
@@ -48,7 +48,7 @@ export default function DashboardPage() {
         <MobileTabs
           aircraft={aircraft}
           loading={loading}
-          openskyError={openskyError}
+          liveError={liveError}
           onSelectAircraft={setSelectedAircraft}
           onAdded={handleAdded}
           onDeleted={handleDeleted}
@@ -62,7 +62,7 @@ export default function DashboardPage() {
           <AircraftList
             aircraft={aircraft}
             loading={loading}
-            openskyError={openskyError}
+            liveError={liveError}
             onSelectAircraft={setSelectedAircraft}
             onAdded={handleAdded}
             onDeleted={handleDeleted}

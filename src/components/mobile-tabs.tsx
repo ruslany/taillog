@@ -7,7 +7,7 @@ import { AircraftWithLive } from '@/types/aircraft';
 interface MobileTabsProps {
   aircraft: AircraftWithLive[];
   loading: boolean;
-  openskyError: boolean;
+  liveError: boolean;
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
   onAdded: (newAircraft: AircraftWithLive) => void;
   onDeleted: (id: string) => void;
@@ -17,7 +17,7 @@ interface MobileTabsProps {
 export function MobileTabs({
   aircraft,
   loading,
-  openskyError,
+  liveError,
   onSelectAircraft,
   onAdded,
   onDeleted,
@@ -33,7 +33,7 @@ export function MobileTabs({
         <AircraftList
           aircraft={aircraft}
           loading={loading}
-          openskyError={openskyError}
+          liveError={liveError}
           onSelectAircraft={onSelectAircraft}
           onAdded={onAdded}
           onDeleted={onDeleted}

@@ -53,6 +53,18 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model FlightRouteCache {
+  callsign        String
+  date            String   // YYYY-MM-DD UTC
+  originIata      String?
+  originName      String?
+  destinationIata String?
+  destinationName String?
+  cachedAt        DateTime @default(now())
+
+  @@id([callsign, date])
+}
+
 model Aircraft {
   id         String   @id @default(cuid())
   userId     String

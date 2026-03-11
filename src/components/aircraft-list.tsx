@@ -34,7 +34,7 @@ function AircraftItemSkeleton() {
 interface AircraftListProps {
   aircraft: AircraftWithLive[];
   loading: boolean;
-  openskyError: boolean;
+  liveError: boolean;
   onSelectAircraft: (aircraft: AircraftWithLive) => void;
   onAdded: (newAircraft: AircraftWithLive) => void;
   onDeleted: (id: string) => void;
@@ -43,7 +43,7 @@ interface AircraftListProps {
 export function AircraftList({
   aircraft,
   loading,
-  openskyError,
+  liveError,
   onSelectAircraft,
   onAdded,
   onDeleted,
@@ -73,7 +73,7 @@ export function AircraftList({
           </DialogContent>
         </Dialog>
 
-        {openskyError && (
+        {liveError && (
           <Alert variant="destructive">
             <AlertTriangle className="h-4 w-4" />
             <AlertDescription>Live tracking unavailable — OpenSky may be down.</AlertDescription>

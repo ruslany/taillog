@@ -63,6 +63,11 @@ export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps
         >
           {isAirborne ? 'Airborne' : 'On Ground / Not Tracked'}
         </Badge>
+        {isAirborne && aircraft.route && (
+          <span className="truncate text-xs text-muted-foreground">
+            {aircraft.route.origin?.iata ?? '?'} → {aircraft.route.destination?.iata ?? '?'}
+          </span>
+        )}
       </div>
 
       {/* Delete */}

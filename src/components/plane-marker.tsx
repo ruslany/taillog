@@ -40,6 +40,14 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
             <p className="text-muted-foreground text-xs">{aircraft.nickname}</p>
           )}
           <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+            {aircraft.route && (
+              <>
+                <span className="text-muted-foreground">From</span>
+                <span>{aircraft.route.origin ? `${aircraft.route.origin.iata} — ${aircraft.route.origin.name}` : '—'}</span>
+                <span className="text-muted-foreground">To</span>
+                <span>{aircraft.route.destination ? `${aircraft.route.destination.iata} — ${aircraft.route.destination.name}` : '—'}</span>
+              </>
+            )}
             <span className="text-muted-foreground">Altitude</span>
             <span>{live.altitude != null ? `${live.altitude.toLocaleString()} ft` : '—'}</span>
             <span className="text-muted-foreground">Speed</span>

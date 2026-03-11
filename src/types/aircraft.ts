@@ -1,5 +1,11 @@
+export interface FlightRoute {
+  origin: { iata: string; name: string } | null;
+  destination: { iata: string; name: string } | null;
+}
+
 export interface LiveState {
   airborne: boolean;
+  callsign: string | null;
   latitude: number | null;
   longitude: number | null;
   altitude: number | null;
@@ -16,4 +22,5 @@ export interface AircraftWithLive {
   nickname: string | null;
   addedAt: string;
   live: LiveState | null;
+  route: FlightRoute | null;
 }
