@@ -26,6 +26,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import { AircraftPhoto } from '@/components/aircraft-photo';
@@ -45,6 +46,12 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
   const [notes, setNotes] = useState(aircraft.notes ?? '');
   const [saving, setSaving] = useState(false);
   const [editPhoto, setEditPhoto] = useState<{
+    url: string;
+    urlLarge: string | null;
+    photographer: string | null;
+  } | null>(null);
+  const [viewOpen, setViewOpen] = useState(false);
+  const [viewPhoto, setViewPhoto] = useState<{
     url: string;
     urlLarge: string | null;
     photographer: string | null;
@@ -80,9 +87,8 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
         icao24={aircraft.icao24}
         size="thumb"
         onPhotoClick={(url, urlLarge, photographer) => {
-          setEditPhoto({ url, urlLarge, photographer });
-          setNotes(aircraft.notes ?? '');
-          setEditOpen(true);
+          setViewPhoto({ url, urlLarge, photographer });
+          setViewOpen(true);
         }}
       />
 
@@ -137,6 +143,53 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
         </TooltipTrigger>
         <TooltipContent>Edit notes</TooltipContent>
       </Tooltip>
+
+      <Dialog
+        open={viewOpen}
+        onOpenChange={(open) => {
+          setViewOpen(open);
+          if (!open) setViewPhoto(null);
+        }}
+      >
+        <DialogContent className="max-w-[90vw] sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{aircraft.tailNumber}</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-4">
+            {viewPhoto ? (
+              <div className="flex flex-col items-center gap-1.5">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={viewPhoto.urlLarge ?? viewPhoto.url}
+                  alt="Aircraft photo"
+                  className="max-h-[50vh] max-w-full rounded object-contain"
+                />
+                {viewPhoto.photographer && (
+                  <span className="text-sm text-muted-foreground">© {viewPhoto.photographer}</span>
+                )}
+              </div>
+            ) : (
+              <Card className="items-center p-4">
+                <AircraftPhoto
+                  icao24={aircraft.icao24}
+                  size="full"
+                  onPhotoLoad={(url, urlLarge, photographer) =>
+                    setViewPhoto({ url, urlLarge, photographer })
+                  }
+                />
+              </Card>
+            )}
+            {aircraft.notes && (
+              <p className="text-sm text-muted-foreground">{aircraft.notes}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Close</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog
         open={editOpen}
