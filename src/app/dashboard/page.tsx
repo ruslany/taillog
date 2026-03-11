@@ -1,10 +1,17 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
-import { AircraftList } from '@/components/aircraft-list';
-import { MobileTabs } from '@/components/mobile-tabs';
+import { AppSidebar } from '@/components/app-sidebar';
+import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { Separator } from '@/components/ui/separator';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from '@/components/ui/breadcrumb';
 import { AircraftWithLive } from '@/types/aircraft';
 
 const FleetMap = dynamic(() => import('@/components/map').then((m) => m.FleetMap), { ssr: false });
@@ -47,39 +54,33 @@ export default function DashboardPage() {
     setAircraft((prev) => prev.map((a) => (a.id === updated.id ? updated : a)));
   }
 
-  const mapSlot = <FleetMap aircraft={aircraft} selectedAircraft={selectedAircraft} />;
-
   return (
-    <>
-      {/* Mobile: tabbed layout */}
-      <div className="flex flex-1 flex-col md:hidden">
-        <MobileTabs
-          aircraft={aircraft}
-          loading={loading}
-          liveError={liveError}
-          onSelectAircraft={setSelectedAircraft}
-          onAdded={handleAdded}
-          onDeleted={handleDeleted}
-          onEdited={handleEdited}
-          mapSlot={mapSlot}
-        />
-      </div>
-
-      {/* Desktop: side-by-side layout */}
-      <div className="hidden md:flex flex-1 overflow-hidden">
-        <aside className="w-[35%] overflow-y-auto border-r">
-          <AircraftList
-            aircraft={aircraft}
-            loading={loading}
-            liveError={liveError}
-            onSelectAircraft={setSelectedAircraft}
-            onAdded={handleAdded}
-            onDeleted={handleDeleted}
-            onEdited={handleEdited}
-          />
-        </aside>
-        <div className="flex-1">{mapSlot}</div>
-      </div>
-    </>
+    <SidebarProvider style={{ '--sidebar-width': '24rem' } as React.CSSProperties}>
+      <AppSidebar
+        aircraft={aircraft}
+        loading={loading}
+        liveError={liveError}
+        onSelectAircraft={setSelectedAircraft}
+        onAdded={handleAdded}
+        onDeleted={handleDeleted}
+        onEdited={handleEdited}
+      />
+      <SidebarInset className="flex flex-col overflow-hidden">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-1 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>My Fleet</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </header>
+        <div className="flex-1 overflow-hidden">
+          <FleetMap aircraft={aircraft} selectedAircraft={selectedAircraft} />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
