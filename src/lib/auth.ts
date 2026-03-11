@@ -10,6 +10,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     signIn: '/',
   },
   callbacks: {
+    signIn({ user }) {
+      const allowedEmails = process.env.ALLOWED_EMAILS?.split(',').map((e) => e.trim()) ?? [];
+      if (allowedEmails.length === 0) return true;
+      return allowedEmails.includes(user.email ?? '');
+    },
     session({ session, user }) {
       session.user.id = user.id;
       return session;
