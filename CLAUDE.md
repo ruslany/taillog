@@ -16,14 +16,14 @@ Schema changes require `npx prisma migrate dev` followed by `npm run build` (whi
 
 ## Environment Variables
 
-| Variable | Required | Purpose |
-|---|---|---|
-| `NEONDB_DATABASE_URL` or `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `AUTH_GOOGLE_ID` | Yes | Google OAuth client ID |
-| `AUTH_GOOGLE_SECRET` | Yes | Google OAuth client secret |
-| `AUTH_SECRET` | Yes | NextAuth secret |
-| `ALLOWED_EMAILS` | No | Comma-separated email allowlist; empty = allow all |
-| `AVIATIONSTACK_API_KEY` | No | Flight route lookup (cached in DB) |
+| Variable                                | Required | Purpose                                            |
+| --------------------------------------- | -------- | -------------------------------------------------- |
+| `NEONDB_DATABASE_URL` or `DATABASE_URL` | Yes      | PostgreSQL connection string                       |
+| `AUTH_GOOGLE_ID`                        | Yes      | Google OAuth client ID                             |
+| `AUTH_GOOGLE_SECRET`                    | Yes      | Google OAuth client secret                         |
+| `AUTH_SECRET`                           | Yes      | NextAuth secret                                    |
+| `ALLOWED_EMAILS`                        | No       | Comma-separated email allowlist; empty = allow all |
+| `AVIATIONSTACK_API_KEY`                 | No       | Flight route lookup (cached in DB)                 |
 
 ## Architecture
 
