@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react';
 
 interface PhotoData {
   url: string | null;
+  urlLarge: string | null;
   photographer: string | null;
 }
 
 interface AircraftPhotoProps {
   icao24: string;
   size: 'thumb' | 'full';
+  onPhotoClick?: (url: string, urlLarge: string | null, photographer: string | null) => void;
 }
 
 const SIZES = {
@@ -24,7 +26,7 @@ const PLANE_SVG = (
   />
 );
 
-export function AircraftPhoto({ icao24, size }: AircraftPhotoProps) {
+export function AircraftPhoto({ icao24, size, onPhotoClick }: AircraftPhotoProps) {
   const [photo, setPhoto] = useState<PhotoData | null>(null);
   const { width, height } = SIZES[size];
 
@@ -59,8 +61,9 @@ export function AircraftPhoto({ icao24, size }: AircraftPhotoProps) {
       <img
         src={photo.url}
         alt="Aircraft photo"
-        className="rounded object-cover"
+        className={`rounded object-cover${onPhotoClick ? ' cursor-pointer' : ''}`}
         style={{ width, height }}
+        onClick={onPhotoClick ? () => onPhotoClick(photo.url!, photo.urlLarge, photo.photographer) : undefined}
       />
       {photo.photographer && (
         <span className="truncate text-[10px] text-muted-foreground">© {photo.photographer}</span>

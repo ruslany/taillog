@@ -44,6 +44,11 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
   const [editOpen, setEditOpen] = useState(false);
   const [nickname, setNickname] = useState(aircraft.nickname ?? '');
   const [saving, setSaving] = useState(false);
+  const [lightbox, setLightbox] = useState<{
+    url: string;
+    urlLarge: string | null;
+    photographer: string | null;
+  } | null>(null);
 
   async function handleSaveNickname() {
     setSaving(true);
@@ -71,7 +76,11 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
 
   return (
     <div className="flex min-h-[48px] items-center gap-3 rounded-md px-1 py-2 hover:bg-muted/50">
-      <AircraftPhoto icao24={aircraft.icao24} size="thumb" />
+      <AircraftPhoto
+        icao24={aircraft.icao24}
+        size="thumb"
+        onPhotoClick={(url, urlLarge, photographer) => setLightbox({ url, urlLarge, photographer })}
+      />
 
       {/* Info */}
       <div
@@ -154,6 +163,28 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
               {saving ? 'Saving…' : 'Save'}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Photo lightbox */}
+      <Dialog open={!!lightbox} onOpenChange={(open) => !open && setLightbox(null)}>
+        <DialogContent className="flex max-w-[90vw] flex-col items-center gap-3 p-4">
+          <DialogHeader className="w-full">
+            <DialogTitle>{aircraft.tailNumber}</DialogTitle>
+          </DialogHeader>
+          {lightbox && (
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={lightbox.urlLarge ?? lightbox.url}
+                alt="Aircraft photo"
+                className="max-h-[70vh] max-w-full rounded object-contain"
+              />
+              {lightbox.photographer && (
+                <span className="text-sm text-muted-foreground">© {lightbox.photographer}</span>
+              )}
+            </>
+          )}
         </DialogContent>
       </Dialog>
 
