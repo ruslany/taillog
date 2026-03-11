@@ -34,7 +34,7 @@ export function AircraftPhoto({ icao24, size, onPhotoClick }: AircraftPhotoProps
     fetch(`/api/aircraft/${icao24}/photo`)
       .then((r) => r.json())
       .then(setPhoto)
-      .catch(() => setPhoto({ url: null, photographer: null }));
+      .catch(() => setPhoto({ url: null, urlLarge: null, photographer: null }));
   }, [icao24]);
 
   if (!photo?.url) {
