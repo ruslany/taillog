@@ -33,13 +33,13 @@ export function PlaneMarker({ aircraft }: PlaneMarkerProps) {
   return (
     <Marker position={[live.latitude, live.longitude]} icon={icon}>
       <Popup maxWidth={260}>
-        <div className="flex flex-col gap-1 text-sm">
+        <div className="flex flex-col gap-0.5 text-sm">
           <AircraftPhoto icao24={aircraft.icao24} size="full" />
-          <p className="font-bold">{aircraft.tailNumber}</p>
+          <div className="font-bold">{aircraft.tailNumber}</div>
           {aircraft.nickname && (
-            <p className="text-muted-foreground text-xs">{aircraft.nickname}</p>
+            <div className="text-muted-foreground text-xs">{aircraft.nickname}</div>
           )}
-          <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+          <div className="mt-0 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
             {aircraft.route && (
               <>
                 <span className="text-muted-foreground">From</span>
