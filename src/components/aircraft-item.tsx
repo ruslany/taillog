@@ -179,9 +179,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
                 />
               </Card>
             )}
-            {aircraft.notes && (
-              <p className="text-sm text-muted-foreground">{aircraft.notes}</p>
-            )}
+            {aircraft.notes && <p className="text-sm text-muted-foreground">{aircraft.notes}</p>}
           </div>
           <DialogFooter>
             <DialogClose asChild>
