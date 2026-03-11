@@ -15,6 +15,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const first = data?.photos?.[0];
     return NextResponse.json({
       url: first?.thumbnail?.src ?? null,
+      urlLarge: first?.thumbnail_large?.src ?? null,
       photographer: first?.photographer ?? null,
     });
   } catch {
