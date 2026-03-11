@@ -31,23 +31,29 @@ export async function fetchFlightRoute(callsign: string): Promise<FlightRoute | 
   const params = new URLSearchParams({ access_key: apiKey, flight_icao: callsign });
   const res = await fetch(`http://api.aviationstack.com/v1/flights?${params.toString()}`);
   if (!res.ok) {
-    console.error(`[AviationStack] Request failed: ${res.status}`);
+    if (res.status === 429) {
+      console.info('[AviationStack] Monthly quota exceeded');
+    } else {
+      console.error(`[AviationStack] Request failed: ${res.status}`);
+    }
     return null;
   }
 
   const data = await res.json();
   const flight = data?.data?.[0];
-  if (!flight) return null;
 
-  const route: FlightRoute = {
-    origin: flight.departure?.iata
-      ? { iata: flight.departure.iata, name: flight.departure.airport }
-      : null,
-    destination: flight.arrival?.iata
-      ? { iata: flight.arrival.iata, name: flight.arrival.airport }
-      : null,
-  };
+  const route: FlightRoute = flight
+    ? {
+        origin: flight.departure?.iata
+          ? { iata: flight.departure.iata, name: flight.departure.airport }
+          : null,
+        destination: flight.arrival?.iata
+          ? { iata: flight.arrival.iata, name: flight.arrival.airport }
+          : null,
+      }
+    : { origin: null, destination: null };
 
+  // Cache even null/empty results so repeated polls don't re-hit the API
   await prisma.flightRouteCache.create({
     data: {
       callsign,
@@ -59,5 +65,5 @@ export async function fetchFlightRoute(callsign: string): Promise<FlightRoute | 
     },
   });
 
-  return route;
+  return flight ? route : null;
 }
