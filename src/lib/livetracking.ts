@@ -30,19 +30,22 @@ interface AirplanesLiveResponse {
 
 /**
  * Fetch live positions for a list of ICAO24 codes via airplanes.live.
+ * Requests are made sequentially with a 1-second delay to respect the
+ * API rate limit of 1 request/second.
  * Returns a map of icao24 (lowercase) → LiveState.
  */
 export async function fetchLivePositions(icao24List: string[]): Promise<Map<string, LiveState>> {
   const result = new Map<string, LiveState>();
   if (icao24List.length === 0) return result;
 
-  const responses = await Promise.all(
-    icao24List.map((icao24) =>
-      fetch(`https://api.airplanes.live/v2/icao/${icao24.toLowerCase()}`)
-        .then((r) => (r.ok ? (r.json() as Promise<AirplanesLiveResponse>) : null))
-        .catch(() => null),
-    ),
-  );
+  const responses: (AirplanesLiveResponse | null)[] = [];
+  for (const icao24 of icao24List) {
+    if (responses.length > 0) await new Promise((resolve) => setTimeout(resolve, 1000));
+    const data = await fetch(`https://api.airplanes.live/v2/icao/${icao24.toLowerCase()}`)
+      .then((r) => (r.ok ? (r.json() as Promise<AirplanesLiveResponse>) : null))
+      .catch(() => null);
+    responses.push(data);
+  }
 
   for (const data of responses) {
     if (!data?.ac?.length) continue;
