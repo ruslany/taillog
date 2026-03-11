@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TailLog
 
-## Getting Started
+A personal aircraft fleet tracker with live ADS-B positions, built with Next.js.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Fleet management** — add aircraft by tail number; ICAO24 hex codes are resolved automatically via [hexdb.io](https://hexdb.io)
+- **Live positions** — dashboard polls [airplanes.live](https://airplanes.live) every 30 seconds for real-time ADS-B data
+- **Flight routes** — airborne aircraft with an active callsign show origin/destination via AviationStack (results cached in the database by callsign + date)
+- **Aircraft photos** — fetched and displayed per aircraft
+- **Interactive map** — Leaflet map with animated plane markers and heading indicators
+- **Google OAuth** — sign in with Google; optional email allowlist for access control
+
+## Tech stack
+
+- [Next.js](https://nextjs.org) 15 (App Router)
+- [Prisma](https://prisma.io) with PostgreSQL ([Neon](https://neon.tech) serverless compatible)
+- [NextAuth v5](https://authjs.dev) — Google OAuth
+- [React-Leaflet](https://react-leaflet.js.org) — map
+- [shadcn/ui](https://ui.shadcn.com) — UI components
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18+
+- A PostgreSQL database (e.g. Neon)
+- A Google OAuth app ([console.cloud.google.com](https://console.cloud.google.com))
+
+### Environment variables
+
+Create a `.env.local` file:
+
+```env
+NEONDB_DATABASE_URL=postgresql://...   # or DATABASE_URL
+AUTH_GOOGLE_ID=...
+AUTH_GOOGLE_SECRET=...
+AUTH_SECRET=...                        # generate with: npx auth secret
+ALLOWED_EMAILS=you@example.com         # optional; empty = allow all
+AVIATIONSTACK_API_KEY=...              # optional; enables flight route lookup
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install and run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npx prisma migrate dev   # create database tables
+npm run dev              # start development server at http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Development commands
 
-## Learn More
+```bash
+npm run dev          # Start development server
+npm run build        # prisma generate + next build
+npm run lint         # ESLint
+npm run format       # Prettier (write)
+npm run format:check # Prettier (check only)
+```
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+After changing `prisma/schema.prisma`, run `npx prisma migrate dev` then `npm run build`.
