@@ -68,6 +68,9 @@ export function AircraftItem({ aircraft, onDelete, onSelect }: AircraftItemProps
             {aircraft.route.origin?.iata ?? '?'} → {aircraft.route.destination?.iata ?? '?'}
           </span>
         )}
+        {isAirborne && aircraft.live?.aircraftType && (
+          <span className="truncate text-xs text-muted-foreground">{aircraft.live.aircraftType}</span>
+        )}
       </div>
 
       {/* Delete */}

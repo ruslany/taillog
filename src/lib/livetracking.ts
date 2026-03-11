@@ -1,6 +1,7 @@
 export interface LiveState {
   airborne: boolean;
   callsign: string | null;
+  aircraftType: string | null;
   latitude: number | null;
   longitude: number | null;
   altitude: number | null; // feet
@@ -51,6 +52,7 @@ export async function fetchLivePositions(icao24List: string[]): Promise<Map<stri
     result.set(icao24, {
       airborne: !onGround,
       callsign: ac.flight?.trim() || null,
+      aircraftType: ac.t ?? null,
       latitude: ac.lat ?? null,
       longitude: ac.lon ?? null,
       altitude: onGround || ac.alt_baro == null ? null : (ac.alt_baro as number),

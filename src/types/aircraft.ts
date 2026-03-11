@@ -6,6 +6,7 @@ export interface FlightRoute {
 export interface LiveState {
   airborne: boolean;
   callsign: string | null;
+  aircraftType: string | null;
   latitude: number | null;
   longitude: number | null;
   altitude: number | null;
