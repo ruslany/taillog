@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { fetchLivePositions } from '@/lib/livetracking';
 import { fetchFlightRoute } from '@/lib/aviationstack';
+import { fetchMetar } from '@/lib/metar';
 
 export async function GET() {
   const session = await auth();
@@ -34,15 +35,17 @@ export async function GET() {
       if (route?.destination?.iata) {
         const airport = await prisma.airport.findUnique({
           where: { iata: route.destination.iata },
-          select: { latitude: true, longitude: true },
+          select: { latitude: true, longitude: true, icao: true },
         });
         if (airport) {
+          const metar = airport.icao ? await fetchMetar(airport.icao) : null;
           route = {
             ...route,
             destination: {
               ...route.destination,
               latitude: airport.latitude,
               longitude: airport.longitude,
+              metar,
             },
           };
         }
