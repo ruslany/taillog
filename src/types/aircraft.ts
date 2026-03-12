@@ -1,6 +1,6 @@
 export interface FlightRoute {
   origin: { iata: string; name: string } | null;
-  destination: { iata: string; name: string } | null;
+  destination: { iata: string; name: string; latitude?: number; longitude?: number } | null;
 }
 
 export interface LiveState {

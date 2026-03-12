@@ -65,6 +65,17 @@ model FlightRouteCache {
   @@id([callsign, date])
 }
 
+model Airport {
+  iata        String  @id
+  icao        String?
+  name        String
+  latitude    Float
+  longitude   Float
+  type        String?
+  municipality String?
+  country     String?
+}
+
 model Aircraft {
   id         String   @id @default(cuid())
   userId     String

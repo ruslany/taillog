@@ -30,7 +30,23 @@ export async function GET() {
   const response = await Promise.all(
     aircraft.map(async (a) => {
       const live = liveMap.get(a.icao24.toLowerCase()) ?? null;
-      const route = live?.airborne && live.callsign ? await fetchFlightRoute(live.callsign) : null;
+      let route = live?.airborne && live.callsign ? await fetchFlightRoute(live.callsign) : null;
+      if (route?.destination?.iata) {
+        const airport = await prisma.airport.findUnique({
+          where: { iata: route.destination.iata },
+          select: { latitude: true, longitude: true },
+        });
+        if (airport) {
+          route = {
+            ...route,
+            destination: {
+              ...route.destination,
+              latitude: airport.latitude,
+              longitude: airport.longitude,
+            },
+          };
+        }
+      }
       return {
         id: a.id,
         tailNumber: a.tailNumber,

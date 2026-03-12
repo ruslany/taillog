@@ -1,9 +1,5 @@
 import { prisma } from '@/lib/prisma';
-
-export interface FlightRoute {
-  origin: { iata: string; name: string } | null;
-  destination: { iata: string; name: string } | null;
-}
+import { FlightRoute } from '@/types/aircraft';
 
 function todayUTC(): string {
   return new Date().toISOString().slice(0, 10);
