@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { PlaneMarker } from '@/components/plane-marker';
-import { AircraftWithLive } from '@/types/aircraft';
+import { AircraftWithLive, FlightRoute } from '@/types/aircraft';
 
 const FLIGHT_CATEGORY_COLORS: Record<string, string> = {
   VFR: '#22c55e',
@@ -26,6 +26,73 @@ function createDestinationPinIcon(flightCategory: string | null) {
     iconAnchor: [14, 36],
     popupAnchor: [0, -36],
   });
+}
+
+type Destination = NonNullable<FlightRoute['destination']>;
+
+function DestinationPopup({
+  dest,
+  tailNumber,
+}: {
+  dest: Destination;
+  tailNumber: string;
+}) {
+  return (
+    <div className="flex flex-col gap-0.5 text-sm">
+      <div className="font-bold">{dest.iata}</div>
+      <div>{dest.name}</div>
+      <div className="text-muted-foreground text-xs">Destination — {tailNumber}</div>
+      {dest.metar && (
+        <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
+          {dest.metar.flightCategory && (
+            <>
+              <span className="text-muted-foreground">Category</span>
+              <span
+                style={{
+                  color: FLIGHT_CATEGORY_COLORS[dest.metar.flightCategory] ?? 'inherit',
+                  fontWeight: 600,
+                }}
+              >
+                {dest.metar.flightCategory}
+              </span>
+            </>
+          )}
+          {dest.metar.windDir != null && dest.metar.windSpeed != null && (
+            <>
+              <span className="text-muted-foreground">Wind</span>
+              <span>
+                {dest.metar.windDir}° @ {dest.metar.windSpeed} kt
+              </span>
+            </>
+          )}
+          {dest.metar.visibility != null && (
+            <>
+              <span className="text-muted-foreground">Visibility</span>
+              <span>{dest.metar.visibility} sm</span>
+            </>
+          )}
+          {dest.metar.ceiling != null && (
+            <>
+              <span className="text-muted-foreground">Ceiling</span>
+              <span>{dest.metar.ceiling.toLocaleString()} ft</span>
+            </>
+          )}
+          {dest.metar.temp != null && (
+            <>
+              <span className="text-muted-foreground">Temp</span>
+              <span>{dest.metar.temp}°C</span>
+            </>
+          )}
+          {dest.metar.altimeter != null && (
+            <>
+              <span className="text-muted-foreground">Altimeter</span>
+              <span>{dest.metar.altimeter.toFixed(2)} inHg</span>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }
 
 function MapController({ selectedAircraft }: { selectedAircraft: AircraftWithLive | null }) {
@@ -93,64 +160,7 @@ export function FleetMap({ aircraft, selectedAircraft }: FleetMapProps) {
                     icon={createDestinationPinIcon(dest!.metar?.flightCategory ?? null)}
                   >
                     <Popup maxWidth={220}>
-                      <div className="flex flex-col gap-0.5 text-sm">
-                        <div className="font-bold">{dest!.iata}</div>
-                        <div>{dest!.name}</div>
-                        <div className="text-muted-foreground text-xs">
-                          Destination — {a.tailNumber}
-                        </div>
-                        {dest!.metar && (
-                          <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs">
-                            {dest!.metar.flightCategory && (
-                              <>
-                                <span className="text-muted-foreground">Category</span>
-                                <span
-                                  style={{
-                                    color:
-                                      FLIGHT_CATEGORY_COLORS[dest!.metar.flightCategory] ??
-                                      'inherit',
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {dest!.metar.flightCategory}
-                                </span>
-                              </>
-                            )}
-                            {dest!.metar.windDir != null && dest!.metar.windSpeed != null && (
-                              <>
-                                <span className="text-muted-foreground">Wind</span>
-                                <span>
-                                  {dest!.metar.windDir}° @ {dest!.metar.windSpeed} kt
-                                </span>
-                              </>
-                            )}
-                            {dest!.metar.visibility != null && (
-                              <>
-                                <span className="text-muted-foreground">Visibility</span>
-                                <span>{dest!.metar.visibility} sm</span>
-                              </>
-                            )}
-                            {dest!.metar.ceiling != null && (
-                              <>
-                                <span className="text-muted-foreground">Ceiling</span>
-                                <span>{dest!.metar.ceiling.toLocaleString()} ft</span>
-                              </>
-                            )}
-                            {dest!.metar.temp != null && (
-                              <>
-                                <span className="text-muted-foreground">Temp</span>
-                                <span>{dest!.metar.temp}°C</span>
-                              </>
-                            )}
-                            {dest!.metar.altimeter != null && (
-                              <>
-                                <span className="text-muted-foreground">Altimeter</span>
-                                <span>{dest!.metar.altimeter.toFixed(2)} inHg</span>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
+                      <DestinationPopup dest={dest!} tailNumber={a.tailNumber} />
                     </Popup>
                   </Marker>
                 </>
