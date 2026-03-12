@@ -4,6 +4,34 @@ import { Metar } from '@/types/aircraft';
 const cache = new Map<string, { data: Metar; expiresAt: number }>();
 const CACHE_TTL_MS = 30 * 60 * 1000; // METARs update hourly; refresh every 30 min
 
+function deriveFlightCategory(
+  ceiling: number | null,
+  visibility: number | null,
+): Metar['flightCategory'] {
+  // FAA standard: worst of ceiling-based and visibility-based category wins
+  const categories: Array<Metar['flightCategory']> = [];
+
+  if (ceiling != null) {
+    if (ceiling < 500) categories.push('LIFR');
+    else if (ceiling < 1000) categories.push('IFR');
+    else if (ceiling <= 3000) categories.push('MVFR');
+    else categories.push('VFR');
+  }
+
+  if (visibility != null) {
+    if (visibility < 1) categories.push('LIFR');
+    else if (visibility < 3) categories.push('IFR');
+    else if (visibility <= 5) categories.push('MVFR');
+    else categories.push('VFR');
+  }
+
+  if (categories.length === 0) return null;
+  const order = ['LIFR', 'IFR', 'MVFR', 'VFR'];
+  return categories.reduce((worst, cat) =>
+    order.indexOf(cat!) < order.indexOf(worst!) ? cat : worst,
+  );
+}
+
 export async function fetchMetar(icao: string): Promise<Metar | null> {
   const now = Date.now();
   const cached = cache.get(icao);
@@ -29,11 +57,15 @@ export async function fetchMetar(icao: string): Promise<Metar | null> {
       }
     }
 
+    const visibility = obs.visib != null ? Number(obs.visib) : null;
+    const flightCategory =
+      (obs.flightCategory as Metar['flightCategory']) ?? deriveFlightCategory(ceiling, visibility);
+
     const metar: Metar = {
-      flightCategory: obs.flightCategory ?? null,
+      flightCategory,
       windDir: obs.wdir ?? null,
       windSpeed: obs.wspd ?? null,
-      visibility: obs.visib != null ? Number(obs.visib) : null,
+      visibility,
       ceiling,
       temp: obs.temp ?? null,
       altimeter: obs.altim ?? null,
