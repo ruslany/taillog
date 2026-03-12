@@ -67,7 +67,7 @@ export function AircraftList({
               Add Aircraft
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Add Aircraft</DialogTitle>
             </DialogHeader>

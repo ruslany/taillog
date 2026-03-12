@@ -151,7 +151,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
           if (!open) setViewPhoto(null);
         }}
       >
-        <DialogContent className="max-w-[90vw] sm:max-w-lg">
+        <DialogContent className="max-w-[90vw] sm:max-w-lg" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{aircraft.tailNumber}</DialogTitle>
           </DialogHeader>
@@ -196,7 +196,7 @@ export function AircraftItem({ aircraft, onDelete, onSelect, onEdited }: Aircraf
           if (!open) setEditPhoto(null);
         }}
       >
-        <DialogContent className="max-w-[90vw] sm:max-w-lg">
+        <DialogContent className="max-w-[90vw] sm:max-w-lg" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{aircraft.tailNumber}</DialogTitle>
           </DialogHeader>
