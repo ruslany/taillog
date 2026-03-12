@@ -30,13 +30,7 @@ function createDestinationPinIcon(flightCategory: string | null) {
 
 type Destination = NonNullable<FlightRoute['destination']>;
 
-function DestinationPopup({
-  dest,
-  tailNumber,
-}: {
-  dest: Destination;
-  tailNumber: string;
-}) {
+function DestinationPopup({ dest, tailNumber }: { dest: Destination; tailNumber: string }) {
   return (
     <div className="flex flex-col gap-0.5 text-sm">
       <div className="font-bold">{dest.iata}</div>
