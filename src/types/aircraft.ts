@@ -1,6 +1,23 @@
+export interface Metar {
+  flightCategory: 'VFR' | 'MVFR' | 'IFR' | 'LIFR' | null;
+  windDir: number | null;
+  windSpeed: number | null;
+  visibility: number | null;
+  ceiling: number | null;
+  temp: number | null;
+  altimeter: number | null;
+  rawOb: string | null;
+}
+
 export interface FlightRoute {
   origin: { iata: string; name: string } | null;
-  destination: { iata: string; name: string; latitude?: number; longitude?: number } | null;
+  destination: {
+    iata: string;
+    name: string;
+    latitude?: number;
+    longitude?: number;
+    metar?: Metar | null;
+  } | null;
 }
 
 export interface LiveState {
