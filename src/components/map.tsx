@@ -31,12 +31,20 @@ function createDestinationPinIcon(flightCategory: string | null) {
 function MapController({ selectedAircraft }: { selectedAircraft: AircraftWithLive | null }) {
   const map = useMap();
   useEffect(() => {
-    if (
-      selectedAircraft?.live?.airborne &&
-      selectedAircraft.live.latitude != null &&
-      selectedAircraft.live.longitude != null
-    ) {
-      map.flyTo([selectedAircraft.live.latitude, selectedAircraft.live.longitude], 8);
+    const live = selectedAircraft?.live;
+    if (!live?.airborne || live.latitude == null || live.longitude == null) return;
+
+    const dest = selectedAircraft?.route?.destination;
+    if (dest?.latitude != null && dest?.longitude != null) {
+      map.fitBounds(
+        [
+          [live.latitude, live.longitude],
+          [dest.latitude, dest.longitude],
+        ],
+        { padding: [60, 60], maxZoom: 8 },
+      );
+    } else {
+      map.flyTo([live.latitude, live.longitude], 8);
     }
   }, [selectedAircraft, map]);
   return null;
